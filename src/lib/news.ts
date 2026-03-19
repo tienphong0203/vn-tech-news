@@ -214,15 +214,17 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
 
-          // Auto-categorize by keywords
+          // Auto-categorize by keywords — only for direct RSS sources
+          // Google News sources already have correct category from query
           const titleLower = cleanTitle.toLowerCase();
           let detectedCategory: Article['category'] = category;
-          if (category !== 'GreenNode') {
-            if (titleLower.match(/greennode/i)) {
-              detectedCategory = 'GreenNode';
-            } else if (titleLower.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
+          if (titleLower.match(/greennode/i)) {
+            detectedCategory = 'GreenNode';
+          } else if (category === 'General') {
+            // Only re-categorize General articles from RSS
+            if (titleLower.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
               detectedCategory = 'AI';
-            } else if (titleLower.match(/\b(cloud|aws|azure|gcp|kubernetes|server|hosting)\b/)) {
+            } else if (titleLower.match(/\b(cloud|aws|azure|gcp|kubernetes|hosting)\b/)) {
               detectedCategory = 'Cloud';
             } else if (titleLower.match(/\b(startup|funding|series|venture)\b/)) {
               detectedCategory = 'Startup';
