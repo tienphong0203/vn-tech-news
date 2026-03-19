@@ -26,13 +26,17 @@ const CATEGORY_LABELS: Record<string, string> = {
   GreenNode: '🌿 GreenNode',
 };
 
-export default function NewsCard({ article, index }: { article: Article; index: number }) {
+export default function NewsCard({ article, index, isHot }: { article: Article; index: number; isHot?: boolean }) {
   return (
     <a
       href={article.url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`news-card stagger-item block bg-[#161B22] border border-[#21262D] rounded-xl p-5 cursor-pointer`}
+      className={`news-card stagger-item block border rounded-xl p-5 cursor-pointer ${
+        isHot
+          ? 'bg-[#161B22] border-[#00E5A0]/25 shadow-[0_0_20px_rgba(0,229,160,0.05)]'
+          : 'bg-[#161B22] border-[#21262D]'
+      }`}
       style={{ animationDelay: `${Math.min(index * 0.06, 0.5)}s` }}
     >
       {/* Top row */}

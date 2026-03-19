@@ -36,7 +36,7 @@ export default async function HomePage() {
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="live-dot w-1.5 h-1.5 rounded-full bg-[#00E5A0] block" />
               <span className="text-[11px] text-[#8B949E] font-mono">
-                {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
+                {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' })}
               </span>
             </div>
             <a href="/" className="text-[12px] font-mono text-[#8B949E] hover:text-[#00E5A0] transition-colors px-3 py-1.5 rounded-lg border border-[#21262D] hover:border-[#00E5A0]/30 flex items-center gap-1.5">
