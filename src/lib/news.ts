@@ -229,7 +229,12 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
 
-          // Auto-categorize by keywords
+          // Clean description first so we can use it in detection
+          const cleanDesc = decodeHtml(
+            description.replace(/<[^>]+>/g, '').trim()
+          ).slice(0, 200);
+
+          // Auto-categorize by keywords using both title and summary
           const titleLower = cleanTitle.toLowerCase();
           const summaryLower = cleanDesc.toLowerCase();
           const combinedText = titleLower + ' ' + summaryLower;
@@ -244,10 +249,6 @@ export async function fetchAllNews(): Promise<Article[]> {
           } else if (combinedText.match(/startup|gọi vốn|khởi nghiệp|funding|series [abc]|venture|đầu tư công nghệ/)) {
             detectedCategory = 'Startup';
           }
-
-          const cleanDesc = decodeHtml(
-            description.replace(/<[^>]+>/g, '').trim()
-          ).slice(0, 200);
 
           const sourceDomain = extractDomain(link);
           const resolvedSource = source === 'Google News'
