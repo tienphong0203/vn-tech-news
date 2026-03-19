@@ -15,42 +15,62 @@ const FILTERS: { label: string; value: Category }[] = [
   { label: '🌿 GreenNode', value: 'GreenNode' },
 ];
 
-// Score articles for "hot" ranking
+// Score articles for "hot" ranking — keyword relevance > recency
 function scoreArticle(article: Article): number {
   let score = 0;
   const now = Date.now();
   const age = now - new Date(article.publishedAt).getTime();
   const ageHours = age / (1000 * 60 * 60);
 
-  // Recency — bài mới nhất lên đầu
-  if (ageHours < 1) score += 50;
-  else if (ageHours < 3) score += 30;
-  else if (ageHours < 6) score += 15;
-  else if (ageHours < 12) score += 5;
+  // Recency — nhỏ thôi, không phải yếu tố chính
+  if (ageHours < 2) score += 8;
+  else if (ageHours < 6) score += 4;
+  else if (ageHours < 12) score += 2;
 
   const text = (article.title + ' ' + article.summary).toLowerCase();
 
-  // High-value keywords cho từng category
-  const hotKeywords = [
-    // AI
-    'chatgpt', 'gemini', 'openai', 'anthropic', 'nvidia', 'llm', 'gpt',
-    'make in viet', 'nghị quyết 57',
-    // Cloud/infra
-    'fpt cloud', 'viettel cloud', 'greennode', 'data center', 'trung tâm dữ liệu',
-    'gpu', 'hạ tầng ai',
-    // Startup
+  // Tier 1 — Highly relevant keywords (+20 each)
+  const tier1 = [
+    'greennode', 'fpt cloud', 'viettel cloud', 'vnpt cloud', 'cmc cloud',
+    'openai', 'anthropic', 'nvidia', 'google deepmind',
     'gọi vốn', 'triệu usd', 'tỷ usd', 'series a', 'series b', 'unicorn',
-    // Impact
-    'việt nam', 'chính phủ', 'bộ trưởng', 'thủ tướng',
+    'data center', 'trung tâm dữ liệu', 'hạ tầng ai', 'gpu cloud',
+    'nghị quyết 57', 'make in viet', 'chip bán dẫn',
   ];
 
-  for (const kw of hotKeywords) {
-    if (text.includes(kw)) score += 10;
-  }
+  // Tier 2 — Relevant keywords (+10 each)
+  const tier2 = [
+    'chatgpt', 'gemini', 'llm', 'gpt', 'claude', 'copilot',
+    'trí tuệ nhân tạo', 'học máy', 'deep learning',
+    'cloud computing', 'điện toán đám mây',
+    'startup việt', 'đầu tư công nghệ', 'khởi nghiệp',
+    'chuyển đổi số', 'an ninh mạng', 'bảo mật',
+    'fpt', 'viettel', 'vnpt', 'vingroup', 'momo', 'zalo',
+  ];
 
-  // Trusted sources bonus
-  const trustedSources = ['vnexpress', 'tuoitre', 'thanhnien', 'vietnamnet'];
-  if (trustedSources.some(s => article.sourceDomain.includes(s))) score += 5;
+  // Tier 3 — General tech (+5 each)
+  const tier3 = [
+    'công nghệ', 'phần mềm', 'ứng dụng', 'nền tảng',
+    'dữ liệu', 'số hóa', 'tự động hóa',
+  ];
+
+  // Negative keywords — giảm điểm bài không relevant
+  const negative = [
+    'quốc phòng', 'bộ đội', 'quân đội', 'hải quân', 'công an',
+    'nông nghiệp', 'nông sản', 'lúa', 'thủy sản',
+    'bitcoin', 'giá vàng', 'bất động sản',
+    'sân bay', 'hàng không', 'du lịch',
+    'pin lithium', 'samsung galaxy buds', 'playstation',
+  ];
+
+  for (const kw of tier1) if (text.includes(kw)) score += 20;
+  for (const kw of tier2) if (text.includes(kw)) score += 10;
+  for (const kw of tier3) if (text.includes(kw)) score += 5;
+  for (const kw of negative) if (text.includes(kw)) score -= 15;
+
+  // Trusted tech sources bonus
+  const techSources = ['vnexpress', 'tuoitre', 'thanhnien', 'vietnamnet', 'genk', 'ictnews'];
+  if (techSources.some(s => article.sourceDomain.includes(s))) score += 3;
 
   return score;
 }
