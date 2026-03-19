@@ -229,23 +229,20 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
 
-          // Auto-categorize by keywords — only reclassify General articles from RSS
+          // Auto-categorize by keywords
           const titleLower = cleanTitle.toLowerCase();
+          const summaryLower = cleanDesc.toLowerCase();
+          const combinedText = titleLower + ' ' + summaryLower;
           let detectedCategory: Article['category'] = category;
-          if (titleLower.match(/greennode/i)) {
+
+          if (combinedText.match(/greennode/i)) {
             detectedCategory = 'GreenNode';
-          } else if (category === 'General' || category === 'Cloud') {
-            if (titleLower.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
-              detectedCategory = 'AI';
-            } else if (
-              titleLower.match(/\b(cloud|aws|azure|gcp|kubernetes|hosting)\b/) ||
-              titleLower.match(/đám mây|điện toán|hạ tầng số|máy chủ ảo|dịch vụ đám|fpt cloud|viettel cloud|vnpt cloud/)
-            ) {
-              detectedCategory = 'Cloud';
-            } else if (titleLower.match(/\b(startup|funding|series|venture)\b/) ||
-              titleLower.match(/gọi vốn|khởi nghiệp|chuyển đổi số/)) {
-              detectedCategory = 'Startup';
-            }
+          } else if (combinedText.match(/cloud|đám mây|hạ tầng số|data center|trung tâm dữ liệu|máy chủ|server farm|điện toán|fpt cloud|viettel cloud|vnpt cloud|chuyển đổi số|digital transformation|kubernetes|devops|saas|paas|iaas/)) {
+            detectedCategory = 'Cloud';
+          } else if (combinedText.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative|trí tuệ nhân tạo|trí tuệ|tự động hóa|robot|automation)\b/)) {
+            detectedCategory = 'AI';
+          } else if (combinedText.match(/startup|gọi vốn|khởi nghiệp|funding|series [abc]|venture|đầu tư công nghệ/)) {
+            detectedCategory = 'Startup';
           }
 
           const cleanDesc = decodeHtml(
