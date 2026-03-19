@@ -185,7 +185,7 @@ function isWithin24Hours(dateStr: string): boolean {
 // Heuristic: check if title has enough Vietnamese characters
 function isVietnamese(text: string): boolean {
   const vnChars = (text.match(/[àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/gi) ?? []).length;
-  return vnChars >= 2 || text.length < 20; // short titles (EN) still allowed if from VN sources
+  return vnChars >= 1 || text.length < 30; // short titles (EN) still allowed if from VN sources
 }
 
 export async function fetchAllNews(): Promise<Article[]> {
