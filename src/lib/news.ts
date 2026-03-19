@@ -54,16 +54,6 @@ const GOOGLE_NEWS_SOURCES = [
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=dien+toan+dam+may+Viet+Nam+cloud&hl=vi&gl=VN&ceid=VN:vi',
-    category: 'Cloud' as const,
-    source: 'Google News',
-  },
-  {
-    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Viettel+Cloud+VNPT+cloud+Vietnam&hl=vi&gl=VN&ceid=VN:vi',
-    category: 'Cloud' as const,
-    source: 'Google News',
-  },
-  {
     url: 'https://news.google.com/rss/search?q=startup+cong+nghe+Viet+Nam+goi+von&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Startup' as const,
     source: 'Google News',
@@ -71,6 +61,35 @@ const GOOGLE_NEWS_SOURCES = [
   {
     url: 'https://news.google.com/rss/search?q=chuyen+doi+so+doanh+nghiep+Viet+Nam&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Startup' as const,
+    source: 'Google News',
+  },
+];
+
+// Vietnam Cloud — direct RSS from tech publications
+const CLOUD_SOURCES = [
+  {
+    url: 'https://vnexpress.net/rss/so-hoa.rss',
+    category: 'Cloud' as const,
+    source: 'VnExpress',
+  },
+  {
+    url: 'https://thanhnien.vn/rss/cong-nghe/internet.rss',
+    category: 'Cloud' as const,
+    source: 'Thanh Niên',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Vietnam&hl=en&gl=VN&ceid=VN:en',
+    category: 'Cloud' as const,
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=Viettel+Cloud+dich+vu+dam+may&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'Cloud' as const,
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=cloud+computing+Vietnam+2025&hl=en&gl=VN&ceid=VN:en',
+    category: 'Cloud' as const,
     source: 'Google News',
   },
 ];
@@ -184,6 +203,7 @@ export async function fetchAllNews(): Promise<Article[]> {
   const allSources = [
     ...RSS_SOURCES,
     ...GOOGLE_NEWS_SOURCES,
+    ...CLOUD_SOURCES,
     ...GREENNODE_SOURCES,
   ];
 
