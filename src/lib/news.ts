@@ -8,12 +8,13 @@ export type Article = {
   sourceDomain: string;
   summary: string;
   publishedAt: string;
-  category: 'AI' | 'Cloud' | 'Startup' | 'General';
+  category: 'AI' | 'Cloud' | 'Startup' | 'General' | 'GreenNode';
   imageUrl?: string;
 };
 
-// Direct RSS feeds from Vietnamese & international tech news sources
+// Direct RSS feeds — Vietnam-focused only
 const RSS_SOURCES = [
+  // Vietnamese general tech
   {
     url: 'https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss',
     category: 'General' as const,
@@ -30,24 +31,67 @@ const RSS_SOURCES = [
     source: 'Thanh Niên',
   },
   {
-    url: 'https://e27.co/feed/',
-    category: 'Startup' as const,
-    source: 'e27',
+    url: 'https://dantri.com.vn/rss/khoa-hoc-cong-nghe.rss',
+    category: 'General' as const,
+    source: 'Dân Trí',
   },
   {
-    url: 'https://www.techinasia.com/feed',
-    category: 'Startup' as const,
-    source: 'Tech in Asia',
+    url: 'https://vietnamnet.vn/rss/cong-nghe.rss',
+    category: 'General' as const,
+    source: 'VietnamNet',
+  },
+];
+
+// Google News RSS — Vietnam AI & Cloud specific searches
+const GOOGLE_NEWS_SOURCES = [
+  {
+    url: 'https://news.google.com/rss/search?q=trí+tuệ+nhân+tạo+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'AI' as const,
+    source: 'Google News',
   },
   {
-    url: 'https://feeds.feedburner.com/TheHackersNews',
+    url: 'https://news.google.com/rss/search?q=AI+ứng+dụng+doanh+nghiệp+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'AI' as const,
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=điện+toán+đám+mây+Việt+Nam+cloud&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Cloud' as const,
-    source: 'The Hacker News',
+    source: 'Google News',
   },
   {
-    url: 'https://www.zdnet.com/topic/cloud/rss.xml',
+    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Viettel+Cloud+VNPT+cloud&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Cloud' as const,
-    source: 'ZDNet Cloud',
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=startup+công+nghệ+Việt+Nam+gọi+vốn&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'Startup' as const,
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=chuyển+đổi+số+doanh+nghiệp+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'Startup' as const,
+    source: 'Google News',
+  },
+];
+
+// GreenNode & Vietnam cloud infrastructure
+const GREENNODE_SOURCES = [
+  {
+    url: 'https://news.google.com/rss/search?q=GreenNode+cloud+Vietnam&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'GreenNode' as const,
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q="GreenNode"&hl=en&gl=SG&ceid=SG:en',
+    category: 'GreenNode' as const,
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=hạ+tầng+cloud+GPU+Việt+Nam+2025+2026&hl=vi&gl=VN&ceid=VN:vi',
+    category: 'GreenNode' as const,
+    source: 'Google News',
   },
 ];
 
@@ -138,6 +182,12 @@ function isWithin24Hours(dateStr: string): boolean {
   }
 }
 
+// Heuristic: check if title has enough Vietnamese characters
+function isVietnamese(text: string): boolean {
+  const vnChars = (text.match(/[àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/gi) ?? []).length;
+  return vnChars >= 2 || text.length < 20; // short titles (EN) still allowed if from VN sources
+}
+
 export async function fetchAllNews(): Promise<Article[]> {
   const parser = new XMLParser({
     ignoreAttributes: false,
@@ -147,8 +197,14 @@ export async function fetchAllNews(): Promise<Article[]> {
   const allArticles: Article[] = [];
   const seenTitles = new Set<string>();
 
+  const allSources = [
+    ...RSS_SOURCES.map(s => ({ ...s, requireVietnamese: false })),
+    ...GOOGLE_NEWS_SOURCES.map(s => ({ ...s, requireVietnamese: true })),
+    ...GREENNODE_SOURCES.map(s => ({ ...s, requireVietnamese: false })),
+  ];
+
   await Promise.allSettled(
-    RSS_SOURCES.map(async ({ url, category, source }) => {
+    allSources.map(async ({ url, category, source, requireVietnamese }) => {
       try {
         const res = await fetch(url, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NewsBot/1.0)' },
@@ -175,15 +231,22 @@ export async function fetchAllNews(): Promise<Article[]> {
           // Decode HTML entities in title
           const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
 
-          // Auto-categorize by keywords in title
+          // Skip non-Vietnamese articles from Google News sources
+          if (requireVietnamese && !isVietnamese(cleanTitle)) continue;
+
+          // Auto-categorize by keywords in title (skip GreenNode — keep as-is)
           const titleLower = cleanTitle.toLowerCase();
           let detectedCategory: Article['category'] = category;
-          if (titleLower.match(/\b(ai|trí tuệ nhân tạo|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
-            detectedCategory = 'AI';
-          } else if (titleLower.match(/\b(cloud|điện toán đám mây|aws|azure|gcp|kubernetes|server|hosting)\b/)) {
-            detectedCategory = 'Cloud';
-          } else if (titleLower.match(/\b(startup|khởi nghiệp|funding|series|venture|đầu tư)\b/)) {
-            detectedCategory = 'Startup';
+          if (category !== 'GreenNode') {
+            if (titleLower.match(/greennode/i)) {
+              detectedCategory = 'GreenNode';
+            } else if (titleLower.match(/\b(ai|trí tuệ nhân tạo|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
+              detectedCategory = 'AI';
+            } else if (titleLower.match(/\b(cloud|điện toán đám mây|aws|azure|gcp|kubernetes|server|hosting|viettelcloud|fpt cloud)\b/)) {
+              detectedCategory = 'Cloud';
+            } else if (titleLower.match(/\b(startup|khởi nghiệp|funding|series|venture|đầu tư)\b/)) {
+              detectedCategory = 'Startup';
+            }
           }
 
           // Clean HTML from description then decode entities
@@ -216,5 +279,5 @@ export async function fetchAllNews(): Promise<Article[]> {
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
 
-  return allArticles.slice(0, 60);
+  return allArticles.slice(0, 80);
 }
