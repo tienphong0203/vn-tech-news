@@ -243,15 +243,15 @@ export async function fetchAllNews(): Promise<Article[]> {
           if (combinedText.match(/greennode/i)) {
             detectedCategory = 'GreenNode';
           } else if (combinedText.match(
-            /\b(cloud|aws|azure|gcp|kubernetes|docker|devops|saas|paas|iaas|server|hosting|data center|datacenter)\b|điện toán đám mây|đám mây|hạ tầng đám mây|dịch vụ đám mây|máy chủ ảo|trung tâm dữ liệu|fpt cloud|viettel cloud|vnpt cloud|cmc cloud|greennode cloud|gpu cloud|hạ tầng ai/
+            /\b(cloud|aws|azure|gcp|kubernetes|docker|devops|saas|paas|iaas)\b|điện toán đám mây|đám mây|hạ tầng đám mây|dịch vụ đám mây|máy chủ ảo|trung tâm dữ liệu|fpt cloud|viettel cloud|vnpt cloud|cmc cloud|gpu cloud|hạ tầng ai|an ninh mạng|bảo mật mạng|an toàn thông tin|chuyển đổi số|hạ tầng số|hạ tầng kỹ thuật số/
           )) {
             detectedCategory = 'Cloud';
           } else if (combinedText.match(
-            /\b(ai|chatgpt|llm|machine learning|deep learning|generative|copilot|gemini|claude)\b|trí tuệ nhân tạo|học máy|mô hình ngôn ngữ|tự động hóa thông minh/
+            /\b(ai|chatgpt|llm|machine learning|deep learning|generative|copilot|gemini)\b|trí tuệ nhân tạo|học máy|mô hình ngôn ngữ/
           )) {
             detectedCategory = 'AI';
           } else if (combinedText.match(
-            /\b(startup|funding|series [abc]|venture capital|unicorn)\b|gọi vốn|khởi nghiệp|đầu tư công nghệ|chuyển đổi số|chuyển đổi kỹ thuật số|đổi mới sáng tạo|fintech|edtech|healthtech/
+            /\b(startup|funding|series [abc]|venture capital|unicorn)\b|gọi vốn|khởi nghiệp|đầu tư công nghệ|đổi mới sáng tạo|fintech|edtech|healthtech/
           )) {
             detectedCategory = 'Startup';
           }

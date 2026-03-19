@@ -20,9 +20,10 @@ function timeAgo(dateStr: unknown): string {
 
 const CATEGORY_LABELS: Record<string, string> = {
   AI: 'Trí tuệ nhân tạo',
-  Cloud: 'Cloud',
+  Cloud: 'Hạ tầng số',
   Startup: 'Startup',
   General: 'Công nghệ',
+  GreenNode: '🌿 GreenNode',
 };
 
 export default function NewsCard({ article, index }: { article: Article; index: number }) {
