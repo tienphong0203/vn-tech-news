@@ -65,22 +65,27 @@ const GOOGLE_NEWS_SOURCES = [
   },
 ];
 
-// Vietnam Cloud — direct RSS, no Google News
+// Vietnam Cloud — Google News English queries (work from Vercel US servers)
 const CLOUD_SOURCES = [
   {
-    url: 'https://vnexpress.net/rss/so-hoa.rss',
+    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Vietnam&hl=en&gl=US&ceid=US:en',
     category: 'Cloud' as const,
-    source: 'VnExpress Số hóa',
+    source: 'Google News',
   },
   {
-    url: 'https://ictnews.vietnamnet.vn/rss/tin-tuc.rss',
+    url: 'https://news.google.com/rss/search?q=Viettel+Cloud+Vietnam&hl=en&gl=US&ceid=US:en',
     category: 'Cloud' as const,
-    source: 'ICTNews',
+    source: 'Google News',
   },
   {
-    url: 'https://www.pcworld.com.vn/rss/all.rss',
+    url: 'https://news.google.com/rss/search?q=cloud+computing+Vietnam+data+center&hl=en&gl=US&ceid=US:en',
     category: 'Cloud' as const,
-    source: 'PCWorld VN',
+    source: 'Google News',
+  },
+  {
+    url: 'https://news.google.com/rss/search?q=Vietnam+digital+infrastructure+cloud+2025+2026&hl=en&gl=US&ceid=US:en',
+    category: 'Cloud' as const,
+    source: 'Google News',
   },
 ];
 
