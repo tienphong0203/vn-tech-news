@@ -12,23 +12,37 @@ export type Article = {
   imageUrl?: string;
 };
 
-// Google News RSS sources — searches Vietnamese AI/Cloud news
+// Direct RSS feeds from Vietnamese & international tech news sources
 const RSS_SOURCES = [
   {
-    url: 'https://news.google.com/rss/search?q=AI+trí+tuệ+nhân+tạo+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
-    category: 'AI' as const,
-  },
-  {
-    url: 'https://news.google.com/rss/search?q=cloud+computing+Việt+Nam+điện+toán+đám+mây&hl=vi&gl=VN&ceid=VN:vi',
-    category: 'Cloud' as const,
-  },
-  {
-    url: 'https://news.google.com/rss/search?q=startup+công+nghệ+Việt+Nam+2024&hl=vi&gl=VN&ceid=VN:vi',
-    category: 'Startup' as const,
-  },
-  {
-    url: 'https://news.google.com/rss/search?q=FPT+Viettel+VNPT+technology+AI&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss',
     category: 'General' as const,
+    source: 'VnExpress',
+  },
+  {
+    url: 'https://tuoitre.vn/rss/nhip-song-so.rss',
+    category: 'General' as const,
+    source: 'Tuổi Trẻ',
+  },
+  {
+    url: 'https://thanhnien.vn/rss/cong-nghe.rss',
+    category: 'General' as const,
+    source: 'Thanh Niên',
+  },
+  {
+    url: 'https://dantri.com.vn/rss/khoa-hoc-cong-nghe.rss',
+    category: 'General' as const,
+    source: 'Dân Trí',
+  },
+  {
+    url: 'https://www.techinasia.com/feed',
+    category: 'Startup' as const,
+    source: 'Tech in Asia',
+  },
+  {
+    url: 'https://e27.co/feed/',
+    category: 'Startup' as const,
+    source: 'e27',
   },
 ];
 
@@ -42,6 +56,7 @@ function extractDomain(url: string): string {
 }
 
 function extractSourceName(item: Record<string, unknown>, fallbackUrl: string): string {
+  // Google News RSS embeds source in <source> tag
   const src = item['source'];
   if (src && typeof src === 'string') return src;
   if (src && typeof src === 'object' && src !== null) {
@@ -66,6 +81,7 @@ function extractSourceName(item: Record<string, unknown>, fallbackUrl: string): 
   };
   return knownSources[domain] || domain;
 }
+
 function slugify(str: string): string {
   return str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').slice(0, 40);
 }
@@ -96,7 +112,7 @@ export async function fetchAllNews(): Promise<Article[]> {
   const seenTitles = new Set<string>();
 
   await Promise.allSettled(
-    RSS_SOURCES.map(async ({ url, category }) => {
+    RSS_SOURCES.map(async ({ url, category, source }) => {
       try {
         const res = await fetch(url, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NewsBot/1.0)' },
@@ -110,15 +126,26 @@ export async function fetchAllNews(): Promise<Article[]> {
         const itemList = Array.isArray(items) ? items : [items];
 
         for (const item of itemList) {
-          const title: string = item.title ?? '';
-          const link: string = item.link ?? item.guid ?? '';
-          const pubDate: string = item.pubDate ?? new Date().toISOString();
-          const description: string = item.description ?? '';
+          const title: string = typeof item.title === 'object' ? (item.title?.['#text'] ?? '') : String(item.title ?? '');
+          const link: string = typeof item.link === 'object' ? (item.link?.['#text'] ?? '') : String(item.link ?? item.guid ?? '');
+          const pubDate: string = typeof item.pubDate === 'object' ? new Date().toISOString() : String(item.pubDate ?? new Date().toISOString());
+          const description: string = typeof item.description === 'object' ? (item.description?.['#text'] ?? '') : String(item.description ?? '');
 
           if (!title || seenTitles.has(title)) continue;
           if (!isWithin24Hours(pubDate)) continue;
 
           seenTitles.add(title);
+
+          // Auto-categorize by keywords in title
+          const titleLower = title.toLowerCase();
+          let detectedCategory = category;
+          if (titleLower.match(/\b(ai|trí tuệ nhân tạo|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
+            detectedCategory = 'AI';
+          } else if (titleLower.match(/\b(cloud|điện toán đám mây|aws|azure|gcp|kubernetes|server|hosting)\b/)) {
+            detectedCategory = 'Cloud';
+          } else if (titleLower.match(/\b(startup|khởi nghiệp|funding|series|venture|đầu tư)\b/)) {
+            detectedCategory = 'Startup';
+          }
 
           // Clean HTML from description
           const cleanDesc = description
@@ -131,17 +158,16 @@ export async function fetchAllNews(): Promise<Article[]> {
             .slice(0, 200);
 
           const sourceDomain = extractDomain(link);
-          const sourceName = extractSourceName(item, link);
 
           allArticles.push({
             id: `${slugify(title)}-${Date.now()}`,
-            title: title.replace(/ - [^-]+$/, ''), // strip source suffix Google adds
-            url: decodeGoogleUrl(link),
-            source: sourceName,
+            title: title.replace(/ - [^-]+$/, ''),
+            url: link,
+            source,
             sourceDomain,
             summary: cleanDesc || 'Xem bài viết đầy đủ tại nguồn.',
             publishedAt: pubDate,
-            category,
+            category: detectedCategory,
             imageUrl: undefined,
           });
         }
@@ -156,5 +182,5 @@ export async function fetchAllNews(): Promise<Article[]> {
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
 
-  return allArticles.slice(0, 60); // cap at 60 articles
+  return allArticles.slice(0, 60);
 }

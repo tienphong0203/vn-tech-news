@@ -2,15 +2,20 @@
 
 import type { Article } from '@/lib/news';
 
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const diff = now - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Vừa xong';
-  if (mins < 60) return `${mins} phút trước`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs} giờ trước`;
-  return `${Math.floor(hrs / 24)} ngày trước`;
+function timeAgo(dateStr: unknown): string {
+  try {
+    const now = Date.now();
+    const diff = now - new Date(String(dateStr)).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (isNaN(mins) || mins < 0) return 'Vừa xong';
+    if (mins < 1) return 'Vừa xong';
+    if (mins < 60) return `${mins} phút trước`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs} giờ trước`;
+    return `${Math.floor(hrs / 24)} ngày trước`;
+  } catch {
+    return '';
+  }
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
