@@ -1,7 +1,8 @@
 import { fetchAllNews } from '@/lib/news';
 import NewsGrid from '@/components/NewsGrid';
 
-export const revalidate = 3600;
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   let articles: Awaited<ReturnType<typeof fetchAllNews>> = [];
@@ -12,8 +13,6 @@ export default async function HomePage() {
   } catch {
     error = true;
   }
-
-  const lastUpdated = new Date().toISOString();
 
   return (
     <div className="min-h-screen">
@@ -37,7 +36,7 @@ export default async function HomePage() {
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="live-dot w-1.5 h-1.5 rounded-full bg-[#00E5A0] block" />
               <span className="text-[11px] text-[#8B949E] font-mono">
-                {new Date(lastUpdated).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
+                {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
               </span>
             </div>
             <a href="/" className="text-[12px] font-mono text-[#8B949E] hover:text-[#00E5A0] transition-colors px-3 py-1.5 rounded-lg border border-[#21262D] hover:border-[#00E5A0]/30 flex items-center gap-1.5">
@@ -55,8 +54,10 @@ export default async function HomePage() {
 
       <footer className="border-t border-[#21262D] mt-12 py-6">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between flex-wrap gap-2">
-          <p className="text-[11px] text-[#8B949E] font-mono">VN Tech Pulse · Tổng hợp tự động từ Google News RSS</p>
-          <p className="text-[11px] text-[#8B949E] font-mono">Cập nhật mỗi giờ · {articles.length} bài viết</p>
+          <p className="text-[11px] text-[#8B949E] font-mono">VN Tech Pulse · Tổng hợp tự động từ RSS</p>
+          <p className="text-[11px] text-[#8B949E] font-mono">
+            {new Date().toLocaleDateString('vi-VN')} · {articles.length} bài viết
+          </p>
         </div>
       </footer>
     </div>
