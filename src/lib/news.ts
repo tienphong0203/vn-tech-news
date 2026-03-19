@@ -39,6 +39,22 @@ const RSS_SOURCES = [
     category: 'General' as const,
     source: 'VietnamNet',
   },
+  // Thêm mới — tech-focused
+  {
+    url: 'https://ictnews.vietnamnet.vn/rss/tin-tuc.rss',
+    category: 'General' as const,
+    source: 'ICTNews',
+  },
+  {
+    url: 'https://genk.vn/rss/tin-tuc.rss',
+    category: 'General' as const,
+    source: 'GenK',
+  },
+  {
+    url: 'https://cafebiz.vn/rss/cong-nghe.rss',
+    category: 'General' as const,
+    source: 'CafeBiz',
+  },
 ];
 
 // Google News RSS — Vietnam AI & Cloud specific searches
