@@ -41,9 +41,14 @@ function extractDomain(url: string): string {
   }
 }
 
-function extractSourceName(item: Record<string, string>, fallbackUrl: string): string {
-  // Google News RSS embeds source in <source> tag
-  if (item['source']) return item['source'];
+function extractSourceName(item: Record<string, unknown>, fallbackUrl: string): string {
+  const src = item['source'];
+  if (src && typeof src === 'string') return src;
+  if (src && typeof src === 'object' && src !== null) {
+    const obj = src as Record<string, unknown>;
+    if (typeof obj['#text'] === 'string') return obj['#text'];
+    if (typeof obj['@_url'] === 'string') return obj['@_url'];
+  }
   const domain = extractDomain(fallbackUrl);
   const knownSources: Record<string, string> = {
     'vnexpress.net': 'VnExpress',
@@ -61,7 +66,6 @@ function extractSourceName(item: Record<string, string>, fallbackUrl: string): s
   };
   return knownSources[domain] || domain;
 }
-
 function slugify(str: string): string {
   return str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').slice(0, 40);
 }
