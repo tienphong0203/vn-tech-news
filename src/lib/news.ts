@@ -138,7 +138,7 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           // Auto-categorize by keywords in title
           const titleLower = title.toLowerCase();
-          let detectedCategory = category;
+          let detectedCategory: Article['category'] = category;
           if (titleLower.match(/\b(ai|trí tuệ nhân tạo|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
             detectedCategory = 'AI';
           } else if (titleLower.match(/\b(cloud|điện toán đám mây|aws|azure|gcp|kubernetes|server|hosting)\b/)) {
