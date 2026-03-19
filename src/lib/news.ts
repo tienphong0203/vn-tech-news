@@ -242,11 +242,17 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           if (combinedText.match(/greennode/i)) {
             detectedCategory = 'GreenNode';
-          } else if (combinedText.match(/cloud|đám mây|hạ tầng số|data center|trung tâm dữ liệu|máy chủ|server farm|điện toán|fpt cloud|viettel cloud|vnpt cloud|chuyển đổi số|digital transformation|kubernetes|devops|saas|paas|iaas/)) {
+          } else if (combinedText.match(
+            /\b(cloud|aws|azure|gcp|kubernetes|docker|devops|saas|paas|iaas|server|hosting|data center|datacenter)\b|điện toán đám mây|đám mây|hạ tầng đám mây|dịch vụ đám mây|máy chủ ảo|trung tâm dữ liệu|fpt cloud|viettel cloud|vnpt cloud|cmc cloud|greennode cloud|gpu cloud|hạ tầng ai/
+          )) {
             detectedCategory = 'Cloud';
-          } else if (combinedText.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative|trí tuệ nhân tạo|trí tuệ|tự động hóa|robot|automation)\b/)) {
+          } else if (combinedText.match(
+            /\b(ai|chatgpt|llm|machine learning|deep learning|generative|copilot|gemini|claude)\b|trí tuệ nhân tạo|học máy|mô hình ngôn ngữ|tự động hóa thông minh/
+          )) {
             detectedCategory = 'AI';
-          } else if (combinedText.match(/startup|gọi vốn|khởi nghiệp|funding|series [abc]|venture|đầu tư công nghệ/)) {
+          } else if (combinedText.match(
+            /\b(startup|funding|series [abc]|venture capital|unicorn)\b|gọi vốn|khởi nghiệp|đầu tư công nghệ|chuyển đổi số|chuyển đổi kỹ thuật số|đổi mới sáng tạo|fintech|edtech|healthtech/
+          )) {
             detectedCategory = 'Startup';
           }
 
