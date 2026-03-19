@@ -30,9 +30,9 @@ const RSS_SOURCES = [
     source: 'Thanh Niên',
   },
   {
-    url: 'https://dantri.com.vn/rss/khoa-hoc-cong-nghe.rss',
-    category: 'General' as const,
-    source: 'Dân Trí',
+    url: 'https://e27.co/feed/',
+    category: 'Startup' as const,
+    source: 'e27',
   },
   {
     url: 'https://www.techinasia.com/feed',
@@ -40,11 +40,47 @@ const RSS_SOURCES = [
     source: 'Tech in Asia',
   },
   {
-    url: 'https://e27.co/feed/',
-    category: 'Startup' as const,
-    source: 'e27',
+    url: 'https://feeds.feedburner.com/TheHackersNews',
+    category: 'Cloud' as const,
+    source: 'The Hacker News',
+  },
+  {
+    url: 'https://www.zdnet.com/topic/cloud/rss.xml',
+    category: 'Cloud' as const,
+    source: 'ZDNet Cloud',
   },
 ];
+
+// Decode HTML entities
+function decodeHtml(str: string): string {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(Number(dec)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&[a-z]+;/g, (entity) => {
+      const entities: Record<string, string> = {
+        '&agrave;': 'à','&aacute;': 'á','&acirc;': 'â','&atilde;': 'ã','&auml;': 'ä',
+        '&egrave;': 'è','&eacute;': 'é','&ecirc;': 'ê','&euml;': 'ë',
+        '&igrave;': 'ì','&iacute;': 'í','&icirc;': 'î','&iuml;': 'ï',
+        '&ograve;': 'ò','&oacute;': 'ó','&ocirc;': 'ô','&otilde;': 'õ','&ouml;': 'ö',
+        '&ugrave;': 'ù','&uacute;': 'ú','&ucirc;': 'û','&uuml;': 'ü',
+        '&Agrave;': 'À','&Aacute;': 'Á','&Acirc;': 'Â','&Atilde;': 'Ã',
+        '&Egrave;': 'È','&Eacute;': 'É','&Ecirc;': 'Ê',
+        '&Igrave;': 'Ì','&Iacute;': 'Í','&Icirc;': 'Î',
+        '&Ograve;': 'Ò','&Oacute;': 'Ó','&Ocirc;': 'Ô','&Otilde;': 'Õ',
+        '&Ugrave;': 'Ù','&Uacute;': 'Ú','&Ucirc;': 'Û',
+        '&nbsp;': ' ','&ndash;': '–','&mdash;': '—',
+        '&lsquo;': '\u2018','&rsquo;': '\u2019','&ldquo;': '\u201C','&rdquo;': '\u201D',
+        '&hellip;': '…','&copy;': '©','&reg;': '®','&trade;': '™',
+      };
+      return entities[entity] ?? entity;
+    });
+}
 
 function extractDomain(url: string): string {
   try {
@@ -136,8 +172,11 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           seenTitles.add(title);
 
+          // Decode HTML entities in title
+          const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
+
           // Auto-categorize by keywords in title
-          const titleLower = title.toLowerCase();
+          const titleLower = cleanTitle.toLowerCase();
           let detectedCategory: Article['category'] = category;
           if (titleLower.match(/\b(ai|trí tuệ nhân tạo|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
             detectedCategory = 'AI';
@@ -147,21 +186,16 @@ export async function fetchAllNews(): Promise<Article[]> {
             detectedCategory = 'Startup';
           }
 
-          // Clean HTML from description
-          const cleanDesc = description
-            .replace(/<[^>]+>/g, '')
-            .replace(/&nbsp;/g, ' ')
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .trim()
-            .slice(0, 200);
+          // Clean HTML from description then decode entities
+          const cleanDesc = decodeHtml(
+            description.replace(/<[^>]+>/g, '').trim()
+          ).slice(0, 200);
 
           const sourceDomain = extractDomain(link);
 
           allArticles.push({
-            id: `${slugify(title)}-${Date.now()}`,
-            title: title.replace(/ - [^-]+$/, ''),
+            id: `${slugify(cleanTitle)}-${Date.now()}`,
+            title: cleanTitle,
             url: link,
             source,
             sourceDomain,
