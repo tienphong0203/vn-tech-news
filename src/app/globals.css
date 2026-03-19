@@ -58,6 +58,7 @@ body::before {
 .badge-Cloud { background: rgba(88, 166, 255, 0.12); color: #58A6FF; border-color: rgba(88, 166, 255, 0.2); }
 .badge-Startup { background: rgba(255, 166, 0, 0.12); color: #FFA600; border-color: rgba(255, 166, 0, 0.2); }
 .badge-General { background: rgba(139, 148, 158, 0.12); color: #8B949E; border-color: rgba(139, 148, 158, 0.2); }
+.badge-GreenNode { background: rgba(0, 229, 160, 0.08); color: #00E5A0; border-color: rgba(0, 229, 160, 0.35); }
 
 /* Staggered fade-up animation */
 .stagger-item {
@@ -86,4 +87,57 @@ body::before {
 
 .live-dot {
   animation: pulseDot 2s ease-in-out infinite;
+}
+
+/* ===== LIGHT MODE ===== */
+html.light body {
+  background-color: #F6F8FA;
+  color: #1C2128;
+}
+
+html.light body::before {
+  opacity: 0.15;
+}
+
+/* Header */
+html.light .bg-\[\#0D1117\]\/90 {
+  background-color: rgba(246, 248, 250, 0.92) !important;
+}
+
+/* Cards */
+html.light .bg-\[\#161B22\] {
+  background-color: #FFFFFF !important;
+}
+
+html.light .border-\[\#21262D\] {
+  border-color: #D0D7DE !important;
+}
+
+html.light .text-\[\#E6EDF3\] {
+  color: #1C2128 !important;
+}
+
+html.light .text-\[\#8B949E\] {
+  color: #57606A !important;
+}
+
+html.light .bg-\[\#0D1117\] {
+  background-color: #F6F8FA !important;
+}
+
+/* Scrollbar */
+html.light ::-webkit-scrollbar-track { background: #F6F8FA; }
+html.light ::-webkit-scrollbar-thumb { background: #D0D7DE; }
+
+/* Badge colors stay same in light mode */
+html.light .badge-AI { background: rgba(0, 180, 125, 0.12); color: #00875A; border-color: rgba(0, 180, 125, 0.3); }
+html.light .badge-Cloud { background: rgba(0, 100, 210, 0.1); color: #0550AE; border-color: rgba(0, 100, 210, 0.25); }
+html.light .badge-Startup { background: rgba(180, 100, 0, 0.1); color: #953800; border-color: rgba(180, 100, 0, 0.25); }
+html.light .badge-General { background: rgba(80, 80, 90, 0.1); color: #57606A; border-color: rgba(80, 80, 90, 0.2); }
+html.light .badge-GreenNode { background: rgba(0, 180, 125, 0.08); color: #00875A; border-color: rgba(0, 180, 125, 0.35); }
+
+/* Card hover in light */
+html.light .news-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-color: rgba(0, 180, 125, 0.4) !important;
 }

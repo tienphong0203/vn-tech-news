@@ -1,5 +1,6 @@
 import { fetchAllNews } from '@/lib/news';
 import NewsGrid from '@/components/NewsGrid';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
@@ -32,13 +33,14 @@ export default async function HomePage() {
               <p className="text-[10px] text-[#8B949E] font-mono mt-0.5">AI & Cloud · Việt Nam · 24h</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="live-dot w-1.5 h-1.5 rounded-full bg-[#00E5A0] block" />
               <span className="text-[11px] text-[#8B949E] font-mono">
                 {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' })}
               </span>
             </div>
+            <ThemeToggle />
             <a href="/" className="text-[12px] font-mono text-[#8B949E] hover:text-[#00E5A0] transition-colors px-3 py-1.5 rounded-lg border border-[#21262D] hover:border-[#00E5A0]/30 flex items-center gap-1.5">
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
                 <path d="M10 5.5a4.5 4.5 0 1 1-1.318-3.182" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
