@@ -14,7 +14,6 @@ export type Article = {
 
 // Direct RSS feeds — Vietnam-focused only
 const RSS_SOURCES = [
-  // Vietnamese general tech
   {
     url: 'https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss',
     category: 'General' as const,
@@ -45,32 +44,32 @@ const RSS_SOURCES = [
 // Google News RSS — Vietnam AI & Cloud specific searches
 const GOOGLE_NEWS_SOURCES = [
   {
-    url: 'https://news.google.com/rss/search?q=trí+tuệ+nhân+tạo+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=tri+tue+nhan+tao+Viet+Nam&hl=vi&gl=VN&ceid=VN:vi',
     category: 'AI' as const,
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=AI+ứng+dụng+doanh+nghiệp+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=AI+ung+dung+doanh+nghiep+Viet+Nam&hl=vi&gl=VN&ceid=VN:vi',
     category: 'AI' as const,
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=điện+toán+đám+mây+Việt+Nam+cloud&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=dien+toan+dam+may+Viet+Nam+cloud&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Cloud' as const,
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Viettel+Cloud+VNPT+cloud&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Viettel+Cloud+VNPT+cloud+Vietnam&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Cloud' as const,
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=startup+công+nghệ+Việt+Nam+gọi+vốn&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=startup+cong+nghe+Viet+Nam+goi+von&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Startup' as const,
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=chuyển+đổi+số+doanh+nghiệp+Việt+Nam&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=chuyen+doi+so+doanh+nghiep+Viet+Nam&hl=vi&gl=VN&ceid=VN:vi',
     category: 'Startup' as const,
     source: 'Google News',
   },
@@ -84,12 +83,12 @@ const GREENNODE_SOURCES = [
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q="GreenNode"&hl=en&gl=SG&ceid=SG:en',
+    url: 'https://news.google.com/rss/search?q=GreenNode&hl=en&gl=SG&ceid=SG:en',
     category: 'GreenNode' as const,
     source: 'Google News',
   },
   {
-    url: 'https://news.google.com/rss/search?q=hạ+tầng+cloud+GPU+Việt+Nam+2025+2026&hl=vi&gl=VN&ceid=VN:vi',
+    url: 'https://news.google.com/rss/search?q=ha+tang+cloud+GPU+Viet+Nam+2025+2026&hl=vi&gl=VN&ceid=VN:vi',
     category: 'GreenNode' as const,
     source: 'Google News',
   },
@@ -108,19 +107,18 @@ function decodeHtml(str: string): string {
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
     .replace(/&[a-z]+;/g, (entity) => {
       const entities: Record<string, string> = {
-        '&agrave;': 'à','&aacute;': 'á','&acirc;': 'â','&atilde;': 'ã','&auml;': 'ä',
-        '&egrave;': 'è','&eacute;': 'é','&ecirc;': 'ê','&euml;': 'ë',
-        '&igrave;': 'ì','&iacute;': 'í','&icirc;': 'î','&iuml;': 'ï',
-        '&ograve;': 'ò','&oacute;': 'ó','&ocirc;': 'ô','&otilde;': 'õ','&ouml;': 'ö',
-        '&ugrave;': 'ù','&uacute;': 'ú','&ucirc;': 'û','&uuml;': 'ü',
-        '&Agrave;': 'À','&Aacute;': 'Á','&Acirc;': 'Â','&Atilde;': 'Ã',
-        '&Egrave;': 'È','&Eacute;': 'É','&Ecirc;': 'Ê',
-        '&Igrave;': 'Ì','&Iacute;': 'Í','&Icirc;': 'Î',
-        '&Ograve;': 'Ò','&Oacute;': 'Ó','&Ocirc;': 'Ô','&Otilde;': 'Õ',
-        '&Ugrave;': 'Ù','&Uacute;': 'Ú','&Ucirc;': 'Û',
-        '&nbsp;': ' ','&ndash;': '–','&mdash;': '—',
-        '&lsquo;': '\u2018','&rsquo;': '\u2019','&ldquo;': '\u201C','&rdquo;': '\u201D',
-        '&hellip;': '…','&copy;': '©','&reg;': '®','&trade;': '™',
+        '&agrave;': '\u00e0','&aacute;': '\u00e1','&acirc;': '\u00e2','&atilde;': '\u00e3',
+        '&egrave;': '\u00e8','&eacute;': '\u00e9','&ecirc;': '\u00ea',
+        '&igrave;': '\u00ec','&iacute;': '\u00ed','&icirc;': '\u00ee',
+        '&ograve;': '\u00f2','&oacute;': '\u00f3','&ocirc;': '\u00f4','&otilde;': '\u00f5',
+        '&ugrave;': '\u00f9','&uacute;': '\u00fa','&ucirc;': '\u00fb',
+        '&Agrave;': '\u00c0','&Aacute;': '\u00c1','&Acirc;': '\u00c2',
+        '&Egrave;': '\u00c8','&Eacute;': '\u00c9','&Ecirc;': '\u00ca',
+        '&Ograve;': '\u00d2','&Oacute;': '\u00d3','&Ocirc;': '\u00d4',
+        '&Ugrave;': '\u00d9','&Uacute;': '\u00da','&Ucirc;': '\u00db',
+        '&nbsp;': ' ','&ndash;': '\u2013','&mdash;': '\u2014',
+        '&lsquo;': '\u2018','&rsquo;': '\u2019','&ldquo;': '\u201c','&rdquo;': '\u201d',
+        '&hellip;': '\u2026','&copy;': '\u00a9','&reg;': '\u00ae','&trade;': '\u2122',
       };
       return entities[entity] ?? entity;
     });
@@ -136,7 +134,6 @@ function extractDomain(url: string): string {
 }
 
 function extractSourceName(item: Record<string, unknown>, fallbackUrl: string): string {
-  // Google News RSS embeds source in <source> tag
   const src = item['source'];
   if (src && typeof src === 'string') return src;
   if (src && typeof src === 'object' && src !== null) {
@@ -147,17 +144,16 @@ function extractSourceName(item: Record<string, unknown>, fallbackUrl: string): 
   const domain = extractDomain(fallbackUrl);
   const knownSources: Record<string, string> = {
     'vnexpress.net': 'VnExpress',
-    'tuoitre.vn': 'Tuổi Trẻ',
-    'thanhnien.vn': 'Thanh Niên',
-    'dantri.com.vn': 'Dân Trí',
-    'baomoi.com': 'Báo Mới',
-    'nhandan.vn': 'Nhân Dân',
+    'tuoitre.vn': 'Tu\u1ed5i Tr\u1ebb',
+    'thanhnien.vn': 'Thanh Ni\u00ean',
+    'dantri.com.vn': 'D\u00e2n Tr\u00ed',
+    'baomoi.com': 'B\u00e1o M\u1edbi',
+    'nhandan.vn': 'Nh\u00e2n D\u00e2n',
     'vietnamnet.vn': 'VietnamNet',
     'cafef.vn': 'CafeF',
     'techcrunch.com': 'TechCrunch',
     'techinasia.com': 'Tech in Asia',
     'e27.co': 'e27',
-    'dealstreetasia.com': 'DealStreetAsia',
   };
   return knownSources[domain] || domain;
 }
@@ -166,26 +162,14 @@ function slugify(str: string): string {
   return str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').slice(0, 40);
 }
 
-// Decode Google News redirect URLs
-function decodeGoogleUrl(url: string): string {
-  // Google News wraps actual URLs — return as-is, browser will redirect
-  return url;
-}
-
 function isWithin24Hours(dateStr: string): boolean {
   try {
     const pub = new Date(dateStr).getTime();
     const now = Date.now();
     return now - pub < 24 * 60 * 60 * 1000;
   } catch {
-    return true; // include if can't parse
+    return true;
   }
-}
-
-// Heuristic: check if title has enough Vietnamese characters
-function isVietnamese(text: string): boolean {
-  const vnChars = (text.match(/[àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/gi) ?? []).length;
-  return vnChars >= 1 || text.length < 30; // short titles (EN) still allowed if from VN sources
 }
 
 export async function fetchAllNews(): Promise<Article[]> {
@@ -198,13 +182,13 @@ export async function fetchAllNews(): Promise<Article[]> {
   const seenTitles = new Set<string>();
 
   const allSources = [
-    ...RSS_SOURCES.map(s => ({ ...s, requireVietnamese: false })),
-    ...GOOGLE_NEWS_SOURCES.map(s => ({ ...s, requireVietnamese: true })),
-    ...GREENNODE_SOURCES.map(s => ({ ...s, requireVietnamese: false })),
+    ...RSS_SOURCES,
+    ...GOOGLE_NEWS_SOURCES,
+    ...GREENNODE_SOURCES,
   ];
 
   await Promise.allSettled(
-    allSources.map(async ({ url, category, source, requireVietnamese }) => {
+    allSources.map(async ({ url, category, source }) => {
       try {
         const res = await fetch(url, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NewsBot/1.0)' },
@@ -228,39 +212,37 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           seenTitles.add(title);
 
-          // Decode HTML entities in title
           const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
 
-          // Skip non-Vietnamese articles from Google News sources
-          if (requireVietnamese && !isVietnamese(cleanTitle)) continue;
-
-          // Auto-categorize by keywords in title (skip GreenNode — keep as-is)
+          // Auto-categorize by keywords
           const titleLower = cleanTitle.toLowerCase();
           let detectedCategory: Article['category'] = category;
           if (category !== 'GreenNode') {
             if (titleLower.match(/greennode/i)) {
               detectedCategory = 'GreenNode';
-            } else if (titleLower.match(/\b(ai|trí tuệ nhân tạo|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
+            } else if (titleLower.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
               detectedCategory = 'AI';
-            } else if (titleLower.match(/\b(cloud|điện toán đám mây|aws|azure|gcp|kubernetes|server|hosting|viettelcloud|fpt cloud)\b/)) {
+            } else if (titleLower.match(/\b(cloud|aws|azure|gcp|kubernetes|server|hosting)\b/)) {
               detectedCategory = 'Cloud';
-            } else if (titleLower.match(/\b(startup|khởi nghiệp|funding|series|venture|đầu tư)\b/)) {
+            } else if (titleLower.match(/\b(startup|funding|series|venture)\b/)) {
               detectedCategory = 'Startup';
             }
           }
 
-          // Clean HTML from description then decode entities
           const cleanDesc = decodeHtml(
             description.replace(/<[^>]+>/g, '').trim()
           ).slice(0, 200);
 
           const sourceDomain = extractDomain(link);
+          const resolvedSource = source === 'Google News'
+            ? (extractSourceName(item, link) || source)
+            : source;
 
           allArticles.push({
             id: `${slugify(cleanTitle)}-${Date.now()}`,
             title: cleanTitle,
             url: link,
-            source,
+            source: resolvedSource,
             sourceDomain,
             summary: cleanDesc || 'Xem bài viết đầy đủ tại nguồn.',
             publishedAt: pubDate,
@@ -274,7 +256,6 @@ export async function fetchAllNews(): Promise<Article[]> {
     })
   );
 
-  // Sort by date descending
   allArticles.sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
