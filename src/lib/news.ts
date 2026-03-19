@@ -65,32 +65,22 @@ const GOOGLE_NEWS_SOURCES = [
   },
 ];
 
-// Vietnam Cloud — direct RSS from tech publications
+// Vietnam Cloud — direct RSS, no Google News
 const CLOUD_SOURCES = [
   {
     url: 'https://vnexpress.net/rss/so-hoa.rss',
     category: 'Cloud' as const,
-    source: 'VnExpress',
+    source: 'VnExpress Số hóa',
   },
   {
-    url: 'https://thanhnien.vn/rss/cong-nghe/internet.rss',
+    url: 'https://ictnews.vietnamnet.vn/rss/tin-tuc.rss',
     category: 'Cloud' as const,
-    source: 'Thanh Niên',
+    source: 'ICTNews',
   },
   {
-    url: 'https://news.google.com/rss/search?q=FPT+Cloud+Vietnam&hl=en&gl=VN&ceid=VN:en',
+    url: 'https://www.pcworld.com.vn/rss/all.rss',
     category: 'Cloud' as const,
-    source: 'Google News',
-  },
-  {
-    url: 'https://news.google.com/rss/search?q=Viettel+Cloud+dich+vu+dam+may&hl=vi&gl=VN&ceid=VN:vi',
-    category: 'Cloud' as const,
-    source: 'Google News',
-  },
-  {
-    url: 'https://news.google.com/rss/search?q=cloud+computing+Vietnam+2025&hl=en&gl=VN&ceid=VN:en',
-    category: 'Cloud' as const,
-    source: 'Google News',
+    source: 'PCWorld VN',
   },
 ];
 
@@ -234,19 +224,21 @@ export async function fetchAllNews(): Promise<Article[]> {
 
           const cleanTitle = decodeHtml(title).replace(/ - [^-]+$/, '');
 
-          // Auto-categorize by keywords — only for direct RSS sources
-          // Google News sources already have correct category from query
+          // Auto-categorize by keywords — only reclassify General articles from RSS
           const titleLower = cleanTitle.toLowerCase();
           let detectedCategory: Article['category'] = category;
           if (titleLower.match(/greennode/i)) {
             detectedCategory = 'GreenNode';
-          } else if (category === 'General') {
-            // Only re-categorize General articles from RSS
+          } else if (category === 'General' || category === 'Cloud') {
             if (titleLower.match(/\b(ai|chatgpt|llm|machine learning|deep learning|generative)\b/)) {
               detectedCategory = 'AI';
-            } else if (titleLower.match(/\b(cloud|aws|azure|gcp|kubernetes|hosting)\b/)) {
+            } else if (
+              titleLower.match(/\b(cloud|aws|azure|gcp|kubernetes|hosting)\b/) ||
+              titleLower.match(/đám mây|điện toán|hạ tầng số|máy chủ ảo|dịch vụ đám|fpt cloud|viettel cloud|vnpt cloud/)
+            ) {
               detectedCategory = 'Cloud';
-            } else if (titleLower.match(/\b(startup|funding|series|venture)\b/)) {
+            } else if (titleLower.match(/\b(startup|funding|series|venture)\b/) ||
+              titleLower.match(/gọi vốn|khởi nghiệp|chuyển đổi số/)) {
               detectedCategory = 'Startup';
             }
           }
